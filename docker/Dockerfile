@@ -66,6 +66,8 @@ RUN echo "Done running arm64 specific installation steps"
 
 # amd64-specific stage
 FROM base AS build-amd64
+ARG ARG_UID
+ARG ARG_GID
 RUN echo "Preparing build of AnythingLLM image for non-ARM architecture"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -170,7 +172,7 @@ ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
 
 # Expose the server port
-EXPOSE 3001
+EXPOSE 13001
 
 # Setup the healthcheck
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
