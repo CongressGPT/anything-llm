@@ -8,7 +8,7 @@ export default function LegalDisclaimerModal(
 
   const showLegalDisclaimer = () => {
     // Load the modal text from the file
-    fetch('/public/legal_disclaimer.txt')
+    fetch('/legal_disclaimer.txt')
       .then(response => response.text())
       .then(text => setModalText(text))
       .catch(error => console.error('Error fetching legal disclaimer text:', error));
