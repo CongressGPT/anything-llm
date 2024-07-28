@@ -212,6 +212,59 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 - **[VectorAdmin][vector-admin]:** An all-in-one GUI & tool-suite for managing vector databases.
 - **[OpenAI Assistant Swarm][assistant-swarm]:** Turn your entire library of OpenAI assistants into one single army commanded from a single agent.
 
+## Setting up for Bipartisan Policy Center
+
+**Requisites**
+
+  - Ubuntu Server (22.04LTS or above)
+  - Git
+  - Buildah
+  - Podman
+
+  1. Switch into the AnythingLLM user in the Ubuntu Server.
+  2. Clone this repo if not present else goto 3:
+      ```shell
+      git clone https://github.com/Bipartisan-Policy-Center/anything-llm.git
+      ```
+  3. Pull the latest changes using: 
+      ```shell
+      git pull https://github.com/Bipartisan-Policy-Center/anything-llm.git
+      ```
+  4. Change into the AnythingLLM directory: `cd anything-llm`
+  5. Build the container/image for AnythingLLM:
+
+      a) Build the base image: 
+        ```shell
+        buildah build --build-arg ARG_UID=1000 --build-arg ARG_GID=1000 \
+        --target build-amd64 -f ./docker/Dockerfile -t build-amd64
+        ```
+      
+      b) Confirm this using `podman images -a`
+
+      c) Build the production image: 
+      ```shell
+      buildah build --log-level=debug --target production-build \
+      -f ./docker/Dockerfile -t anythingllm_bpcc_prd
+      ```
+
+      d) Confirm the same again.
+
+  6. Make the requisite changes in the .env file. See below command for the location. 
+  
+  7. Run the production build image for latest changes to take place: 
+
+      ```shell
+      export STORAGE_LOCATION_BPCC=$ANYTHINGLLM_BPCC_STORE/anythingllm && \
+      mkdir -p $STORAGE_LOCATION_BPCC && \ 
+      touch "$STORAGE_LOCATION_BPCC/.env" && \
+      podman run -d -p 13001:13001 \ 
+      --cap-add SYS_ADMIN \
+      -v ${STORAGE_LOCATION_BPCC}:/app/server/storage \
+      -v ${STORAGE_LOCATION_BPCC}/.env:/app/server/.env \
+      -e STORAGE_DIR="/app/server/storage" --rm \
+      --name anythingllm_bpcc localhost/anythingllm_bpcc_prd:latest
+      ```
+
 <div align="right">
 
 [![][back-to-top]](#readme-top)
